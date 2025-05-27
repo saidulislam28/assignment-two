@@ -20,7 +20,6 @@ VALUES
 ('Asiatic Elephant','Elephas maximus indicus','1758-01-01','Endangered');
 
 
-ALTER TABLE species ALTER COLUMN discovery_date TYPE DATE;
 
 CREATE TABLE sightings (
     sighting_id SERIAL PRIMARY KEY,
@@ -45,7 +44,7 @@ VALUES
   ('Bob White', 'River Delta'),
   ('Carol King', 'Mountain Range');
 
-DROP TABLE sightings;
+DROP TABLE rangers;
 
 SELECT * FROM rangers;
 SELECT * FROM species;
@@ -84,20 +83,16 @@ UPDATE species
 SET conservation_status = 'Historic'
 WHERE (EXTRACT(YEAR FROM discovery_date)) < 1800;
 
-
-
 -- task 8
--- Label each sighting's time of day as 'Morning', 'Afternoon', or 'Evening'.
--- Morning: before 12 PM
--- Afternoon: 12 PM–5 PM
--- Evening: after 5 PM
-
-SELECT EXTRACT(HOUR FROM sighting_time) FROM sightings;
-
-
-
+SELECT 
+  sighting_id,
+  CASE 
+    WHEN EXTRACT(HOUR FROM sighting_time) < 12 THEN 'Morning'
+    WHEN EXTRACT(HOUR FROM sighting_time) BETWEEN 12 AND 17 THEN 'Afternoon'
+    ELSE 'Evening'
+  END AS time_of_day
+FROM sightings;
 
 -- task 9
---Delete rangers who have never sighted any species
 DELETE FROM rangers
 WHERE ranger_id NOT IN (SELECT ranger_id FROM sightings);
